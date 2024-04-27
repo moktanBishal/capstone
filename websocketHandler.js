@@ -47,6 +47,16 @@ async function initializeChatRooms() {
     }
 }
 
+async function handleGetRoomsRequest(ws) {
+    try {
+        const existingRooms = await Room.find({}, 'name');
+        const roomNames = existingRooms.map(room => room.name);
+        ws.send(JSON.stringify({ type: 'roomList', rooms : roomNames}));
+    } catch (error) {
+        console.error('Error retrieving rooms: ', error);
+    }
+}
+
 async function handleMessage(ws, message) {
   try {
       const data = JSON.parse(message);
@@ -94,6 +104,10 @@ async function handleMessage(ws, message) {
           return;
       }
 
+      // Handle retrieving room 
+      if (data.type === 'getRooms') {
+        await handleGetRoomsRequest(ws);
+      }
       // Handle chat messages
       if (data.type === 'chatMessage') {
           const roomName = clientRooms.get(ws);
