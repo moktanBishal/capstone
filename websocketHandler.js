@@ -115,15 +115,24 @@ async function handleMessage(ws, message) {
               ws.send(JSON.stringify({ type: 'error', message: 'You are not connected to a room.' }));
               return;
           }
-          const message = {
-              nickname: connectedClients.get(ws),
-              text: data.text,
-              roomName,
+          const messageData = {
+            roomName: roomName,
+            nickname: connectedClients.get(ws),
+            text: data.text,
           };
+          try {
+            const newMessage = new Message(messageData);
+            await newMessage.save();
 
-          // Store the message in the database
-          const newMessage = new Message(message);
-          await newMessage.save();
+            const messages = chatRoomMessages.get(roomName);
+            messages.push(newMessage);
+            chatRoomMessages.set(roomName, messages);
+            ws.send(JSON.stringify({ type: 'chatMessage', message: messages}))
+          } catch (error) {
+            console.error('Error saving messages to databases: ', error);
+            ws.send(JSON.stringify({ type: 'error', message: 'Failed to save messages'}));
+            return;
+          }
       }
   } catch (error) {
       console.error('Error handling message:', error);

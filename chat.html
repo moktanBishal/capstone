@@ -74,16 +74,15 @@
           option.textContent = room;
           select.appendChild(option);
         });
-      } else if (data.type === 'systemMessage' || data.type === 'message') {
+      } else if (data.type === 'systemMessage' || data.type === 'chatMessage') {
         // Handle system and chat messages
         const chat = document.getElementById('chat');
         const message = document.createElement('div');
         if (data.type === 'systemMessage') {
           message.textContent = data.message;
-        } else {
-          data.messages.forEach(msg => {
-            message.textContent = `${data.sender}: ${data.message}`;
-          })
+        } else if (data.type === 'chatMessage') {
+          // console.log(chatMessage);
+          message.textContent = `${data.nickname}: ${data.message}`;
         }
         chat.appendChild(message);
       }
@@ -131,7 +130,7 @@
       const message = messageInput.value.trim();
 
       if (message !== '') {
-        sendJsonMessage('message', { message });
+        sendJsonMessage('chatMessage', { message });
         messageInput.value = ''; // Clear input field after sending message
       }
     });
