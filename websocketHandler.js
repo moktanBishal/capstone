@@ -118,7 +118,7 @@ async function handleMessage(ws, message) {
           const messageData = {
             roomName: roomName,
             nickname: connectedClients.get(ws),
-            text: data.text,
+            text: data.message,
           };
           try {
             const newMessage = new Message(messageData);
@@ -127,7 +127,7 @@ async function handleMessage(ws, message) {
             const messages = chatRoomMessages.get(roomName);
             messages.push(newMessage);
             chatRoomMessages.set(roomName, messages);
-            ws.send(JSON.stringify({ type: 'chatMessage', message: messages}))
+            ws.send(JSON.stringify({ type: 'chatMessage', message: data.text}))
           } catch (error) {
             console.error('Error saving messages to databases: ', error);
             ws.send(JSON.stringify({ type: 'error', message: 'Failed to save messages'}));
