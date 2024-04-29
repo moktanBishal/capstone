@@ -75,13 +75,16 @@
           select.appendChild(option);
         });
       } else if (data.type === 'systemMessage') {
-        // Handle system and chat messages
-        const chat = document.getElementById('chat');
-        const message = document.createElement('div');
-        if (data.type === 'systemMessage') {
+          // Handle system messages
+          const chat = document.getElementById('chat');
+          const message = document.createElement('div');
           message.textContent = data.message;
-        } 
-        chat.appendChild(message);
+          chat.appendChild(message);        
+      } else if (data.type === 'chatMessage') {
+          const chat = document.getElementById('chat');
+          const message = document.createElement('div');
+          message.textContent = `${data.message.nickname} : ${data.message.text}`;
+          chat.appendChild(message); 
       }
     };
 
