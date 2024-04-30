@@ -3,24 +3,7 @@
 
 <head>
   <title>Chat Room</title>
-  <style>
-    /* Add some basic styling */
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    #chat {
-      border: 1px solid #ccc;
-      padding: 10px;
-      height: 300px;
-      overflow-y: auto;
-    }
-
-    #roomList {
-      list-style-type: none;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="./style.css" />`
 </head>
 
 <body>
@@ -51,98 +34,8 @@
     <button id="sendMessageButton">Send Message</button>
   </div>
 
-  <script>
-    // Establish a WebSocket connection to the server
-    const ws = new WebSocket('ws://localhost:3000');
-
-    // Function to send a JSON message to the server
-    function sendJsonMessage(type, data) {
-      ws.send(JSON.stringify({ type, ...data }));
-    }
-
-    // Event handler for receiving messages from the server
-    ws.onmessage = function (event) {
-      const data = JSON.parse(event.data);
-
-      if (data.type === 'roomList') {
-        // Handle the list of existing rooms
-        const select = document.getElementById('roomList');
-        select.innerHTML = '';
-        data.rooms.forEach(room => {
-          const option = document.createElement('option');
-          option.value = room;
-          option.textContent = room;
-          select.appendChild(option);
-        });
-      } else if (data.type === 'systemMessage') {
-          // Handle system messages
-          const chat = document.getElementById('chat');
-          const message = document.createElement('div');
-          message.textContent = data.message;
-          chat.appendChild(message);        
-      } else if (data.type === 'chatMessage') {
-          const chat = document.getElementById('chat');
-          const message = document.createElement('div');
-          message.textContent = `${data.message.nickname} : ${data.message.text}`;
-          chat.appendChild(message); 
-      } else if (data.type === 'existingMessages') {
-          const chat = document.getElementById('chat');
-          chat.innerHTML = '';
-          data.messages.forEach(msg => {
-            const message = document.createElement('div');
-            message.textContent = `${msg.nickname} : ${msg.text}`;
-            chat.appendChild(message);
-          })
-      }
-    };
-
-    // Event handler for the "Set Nickname" button
-    document.getElementById('setNicknameButton').addEventListener('click', () => {
-      const nicknameInput = document.getElementById('nicknameInput');
-      const nickname = nicknameInput.value.trim();
-
-      if (nickname !== '') {
-        sendJsonMessage('setNickname', { nickname });
-        nicknameInput.value = ''; // Clear input field after setting nickname
-      }
-    });
-
-    // Event handler for the "Create Room" button
-    document.getElementById('createRoomButton').addEventListener('click', () => {
-      const roomNameInput = document.getElementById('roomNameInput');
-      const roomName = roomNameInput.value.trim();
-
-      if (roomName !== '') {
-        sendJsonMessage('createRoom', { roomName });
-        roomNameInput.value = ''; // Clear input field after creating room
-      }
-    });
-
-    // Event handler for the "Join Room" button
-    document.getElementById('joinRoomButton').addEventListener('click', () => {
-      const roomName = document.getElementById('roomList').value.trim();
-
-      if (roomName !== '') {
-        sendJsonMessage('joinRoom', { roomName });
-      }
-    });
-
-    // Event handler for the "Get Rooms" button
-    document.getElementById('getRoomsButton').addEventListener('click', () => {
-      sendJsonMessage('getRooms', {});
-    });
-
-    // Event handler for the "Send Message" button
-    document.getElementById('sendMessageButton').addEventListener('click', () => {
-      const messageInput = document.getElementById('messageInput');
-      const message = messageInput.value.trim();
-      const roomName = document.getElementById('roomList').value.trim();
-      if (message !== '') {
-        sendJsonMessage('chatMessage', { message, roomName });
-        messageInput.value = ''; // Clear input field after sending message
-      }
-    });
-  </script>
+  <script src="./script.js"></script>
+ 
 </body>
 
 </html>
