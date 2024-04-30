@@ -85,6 +85,14 @@
           const message = document.createElement('div');
           message.textContent = `${data.message.nickname} : ${data.message.text}`;
           chat.appendChild(message); 
+      } else if (data.type === 'existingMessages') {
+          const chat = document.getElementById('chat');
+          chat.innerHTML = '';
+          data.messages.forEach(msg => {
+            const message = document.createElement('div');
+            message.textContent = `${msg.nickname} : ${msg.text}`;
+            chat.appendChild(message);
+          })
       }
     };
 
@@ -128,9 +136,9 @@
     document.getElementById('sendMessageButton').addEventListener('click', () => {
       const messageInput = document.getElementById('messageInput');
       const message = messageInput.value.trim();
-
+      const roomName = document.getElementById('roomList').value.trim();
       if (message !== '') {
-        sendJsonMessage('chatMessage', { message });
+        sendJsonMessage('chatMessage', { message, roomName });
         messageInput.value = ''; // Clear input field after sending message
       }
     });

@@ -99,6 +99,8 @@ async function handleMessage(ws, message) {
                 ws.send(JSON.stringify({ type: 'systemMessage', message: `Room "${roomName}" does not exist.` }));
                 return;
             }
+            const existingMessages = await Message.find({ roomName: roomName});
+            ws.send(JSON.stringify({ type: 'existingMessages', message: existingMessages}));
             clientRooms.set(ws, roomName);
             ws.send(JSON.stringify({ type: 'systemMessage', message: `You have joined room "${roomName}".` }));
             return;
