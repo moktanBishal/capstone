@@ -10,10 +10,11 @@ const chatRoomMessages = new Map();
 // Maintain a map to store the room each client is connected to
 const clientRooms = new Map();
 
+let wss;
 // Handle WebSocket connection
 function handleWebSocketConnection(server) {
-    const wss = new WebSocket.Server({ server });
-
+    
+    wss = new WebSocket.Server({ server });
     // When the server starts, retrieve existing chat rooms from MongoDB and store them in the chatRoomMessages map
     initializeChatRooms();
 
@@ -129,8 +130,12 @@ async function handleMessage(ws, message) {
                 const messages = chatRoomMessages.get(roomName);
                 messages.push(newMessage);
                 chatRoomMessages.set(roomName, messages);
-                ws.send(JSON.stringify({ type: 'chatMessage', roomName, message: newMessage }))
 
+                wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN && clientRooms.get(client) === roomName) {
+                        client.send(JSON.stringify({ type: 'chatMessage', roomName, message: newMessage }))
+                    }
+                });
             } catch (error) {
                 console.error('Error saving messages to databases: ', error);
                 ws.send(JSON.stringify({ type: 'error', message: 'Failed to save messages' }));
